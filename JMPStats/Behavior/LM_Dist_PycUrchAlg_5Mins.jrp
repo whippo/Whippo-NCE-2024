@@ -1,0 +1,225 @@
+﻿Local Here(
+	(table1 = New Table( "tracker5min",
+		Add Rows( 48 ),
+		New Script(
+			"Source",
+			Open(
+				"$DOCUMENTS/Git/pycno-urchin/JMPStats_2023-04-09/Behavior/tracker5min.csv",
+				columns(
+					New Column( "t", Numeric, "Continuous", Format( "Best", 12 ) ),
+					New Column( "distance",
+						Numeric,
+						"Continuous",
+						Format( "Best", 12 )
+					),
+					New Column( "Alg", Character, "Nominal" ),
+					New Column( "Pyc", Character, "Nominal" ),
+					New Column( "Urchin", Character, "Nominal" ),
+					New Column( "ID", Character, "Nominal" ),
+					New Column( "tank", Character, "Nominal" ),
+					New Column( "permin",
+						Numeric,
+						"Continuous",
+						Format( "Best", 12 )
+					),
+					New Column( "fivemin",
+						Numeric,
+						"Continuous",
+						Format( "Best", 12 )
+					)
+				),
+				Import Settings(
+					End Of Line( CRLF, CR, LF ),
+					End Of Field( Comma, CSV( 1 ) ),
+					Strip Quotes( 0 ),
+					Use Apostrophe as Quotation Mark( 0 ),
+					Use Regional Settings( 0 ),
+					Scan Whole File( 1 ),
+					Treat empty columns as numeric( 0 ),
+					CompressNumericColumns( 0 ),
+					CompressCharacterColumns( 0 ),
+					CompressAllowListCheck( 0 ),
+					Labels( 1 ),
+					Column Names Start( 1 ),
+					First Named Column( 1 ),
+					Data Starts( 2 ),
+					Lines To Read( "All" ),
+					Year Rule( "20xx" )
+				)
+			)
+		),
+		New Column( "t",
+			Numeric,
+			"Continuous",
+			Format( "Best", 12 ),
+			Set Values(
+				[60.3888888888889, 60.0555555555556, 60.1111111111111,
+				60.5555555555556, 59.7222222222222, 59.7777777777778,
+				58.6111111111111, 50.5, 59.7777777777778, 59.4444444444445,
+				59.8888888888889, 59.7777777777778, 60.1666666666667, 59,
+				60.1111111111111, 57.9444444444445, 58.44444445, 57.8888888833333,
+				60.05555555, 60.44444445, 58.94444445, 58.5, 59.2777777833333,
+				59.6111111166667, 59.3888888833333, 58.7222222166667, 60,
+				58.94444445, 59.8888888833333, 57.8333333333333, 59.6666666666667,
+				60.1666666666667, 60.3333333333333, 58.55555555, 59.7777777833333,
+				59.1111111166667, 59, 59, 58.2777777833333, 59.1111111166667,
+				58.3888888833333, 60.3333333333333, 57.2777777833333, 59.05555555,
+				59.44444445, 59.05555555, 59.1666666666667, 58.7777777833333]
+			)
+		),
+		New Column( "distance",
+			Numeric,
+			"Continuous",
+			Format( "Best", 12 ),
+			Set Values(
+				[1149.06794156201, 715.83745105127, 862.587135547108,
+				858.363031747139, 618.172079437506, 820.974459444855,
+				253.858333020441, 753.208507005167, 849.003274713527,
+				612.262704839828, 322.698806233718, 731.565170726454,
+				1052.32011341938, 502.788559305506, 990.186238890027,
+				249.697896204364, 435.594441520316, 742.838404704925,
+				1006.71493570193, 678.78358016933, 547.685491964186,
+				764.665856328292, 822.576396282611, 929.40535239274,
+				1086.55642540208, 485.317142723391, 267.180742692686,
+				421.882422548866, 1055.28684871031, 457.588295342934,
+				841.267794545217, 865.27248764725, 763.414291882743,
+				439.208333959511, 518.119473884225, 593.628625239424,
+				965.314271854203, 370.651523298725, 603.194271749634,
+				547.472904926297, 708.429285385366, 705.11387906214,
+				1099.95689208824, 1217.91945077279, 455.201124117673,
+				813.913419798064, 937.703013542138, 536.758358472154]
+			)
+		),
+		New Column( "Alg",
+			Character,
+			"Nominal",
+			Set Values(
+				{"Algae", "Algae", "No Algae", "Algae", "Algae", "Algae", "Algae",
+				"No Algae", "No Algae", "Algae", "No Algae", "No Algae", "Algae",
+				"Algae", "No Algae", "Algae", "No Algae", "Algae", "Algae",
+				"No Algae", "No Algae", "No Algae", "No Algae", "Algae", "Algae",
+				"Algae", "Algae", "Algae", "Algae", "No Algae", "No Algae",
+				"No Algae", "No Algae", "Algae", "No Algae", "No Algae", "No Algae",
+				"No Algae", "Algae", "No Algae", "No Algae", "Algae", "Algae",
+				"Algae", "No Algae", "No Algae", "Algae", "Algae"}
+			)
+		),
+		New Column( "Pyc",
+			Character,
+			"Nominal",
+			Set Values(
+				{"Pycno", "No Pycno", "No Pycno", "Pycno", "Pycno", "No Pycno",
+				"No Pycno", "No Pycno", "No Pycno", "Pycno", "No Pycno", "No Pycno",
+				"No Pycno", "No Pycno", "Pycno", "No Pycno", "Pycno", "Pycno",
+				"Pycno", "Pycno", "Pycno", "No Pycno", "Pycno", "Pycno", "No Pycno",
+				"Pycno", "No Pycno", "No Pycno", "No Pycno", "No Pycno", "No Pycno",
+				"Pycno", "No Pycno", "Pycno", "Pycno", "Pycno", "No Pycno",
+				"No Pycno", "No Pycno", "No Pycno", "Pycno", "Pycno", "Pycno",
+				"Pycno", "Pycno", "Pycno", "No Pycno", "No Pycno"}
+			)
+		),
+		New Column( "Urchin",
+			Character,
+			"Nominal",
+			Set Values(
+				{"Starved", "Starved", "Fed", "Fed", "Starved", "Fed", "Starved",
+				"Fed", "Fed", "Starved", "Starved", "Starved", "Fed", "Fed", "Fed",
+				"Starved", "Fed", "Fed", "Fed", "Fed", "Starved", "Starved",
+				"Starved", "Starved", "Fed", "Starved", "Starved", "Starved", "Fed",
+				"Starved", "Fed", "Fed", "Fed", "Starved", "Fed", "Fed", "Fed",
+				"Starved", "Starved", "Starved", "Starved", "Fed", "Fed", "Fed",
+				"Starved", "Starved", "Fed", "Starved"}
+			)
+		),
+		New Column( "ID",
+			Character,
+			"Nominal",
+			Set Values(
+				{"S01", "S03", "F01", "F02", "S04", "F03", "S05", "F04", "F05",
+				"S06", "S07", "S08", "F06", "F07", "F08", "S09", "F09", "F10", "F11",
+				"F12", "S10", "S11", "S12", "S13", "F13", "S14", "S15", "S16", "F14",
+				"S17", "F15", "F16", "F17", "S18", "F18", "F19", "F20", "S19", "S20",
+				"S21", "S22", "F21", "F22", "F23", "S23", "S24", "F24", "S25"}
+			)
+		),
+		New Column( "tank",
+			Character,
+			"Nominal",
+			Set Values(
+				{"TF2", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1",
+				"TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1",
+				"TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1",
+				"TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1",
+				"TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2", "TF1", "TF2"}
+			)
+		),
+		New Column( "permin",
+			Numeric,
+			"Continuous",
+			Format( "Best", 12 ),
+			Set Values(
+				[19.0278040001069, 11.9195875290683, 14.3498784102107,
+				14.1748023591271, 10.3507883068606, 13.733773485137, 4.3312322221497,
+				14.9150199406964, 14.2026570119363, 10.2997464365578,
+				5.38829175529399, 12.2380790641972, 17.4900849875797,
+				8.52183998822892, 16.4725991682259, 4.3092637887618,
+				7.45313683138819, 12.8321413493012, 16.763060910556, 11.229875406181,
+				9.29155405695211, 13.071211219287, 13.8766402358944,
+				15.5911429091428, 18.2956180159654, 8.26462494782166,
+				4.45301237821144, 7.15728897753427, 17.6207451563522,
+				7.9121895448346, 14.0994602437746, 14.3812601825028,
+				12.6532755560676, 7.50071158635794, 8.66742614223913,
+				10.0425895237833, 16.3612588449865, 6.28222920845296,
+				10.3503306868049, 9.26175966893532, 12.1329468488581,
+				11.6869703711957, 19.2039030607837, 20.6232832699648,
+				7.65758900313303, 13.7821651530982, 15.8485016373319,
+				9.13199475575196]
+			)
+		),
+		New Column( "fivemin",
+			Numeric,
+			"Continuous",
+			Format( "Best", 12 ),
+			Set Values(
+				[95.1390200005344, 59.5979376453417, 71.7493920510533,
+				70.8740117956354, 51.7539415343028, 68.6688674256849,
+				21.6561611107485, 74.5750997034819, 71.0132850596816,
+				51.4987321827892, 26.9414587764699, 61.190395320986,
+				87.4504249378984, 42.6091999411446, 82.3629958411298,
+				21.546318943809, 37.265684156941, 64.1607067465061, 83.8153045527798,
+				56.1493770309051, 46.4577702847606, 65.3560560964352,
+				69.3832011794721, 77.9557145457139, 91.4780900798271,
+				41.3231247391083, 22.2650618910572, 35.7864448876714,
+				88.1037257817609, 39.560947724173, 70.497301218873, 71.9063009125139,
+				63.2663777803378, 37.5035579317897, 43.3371307111956,
+				50.2129476189163, 81.8062942249324, 31.4111460422648,
+				51.7516534340247, 46.3087983446766, 60.6647342442906,
+				58.4348518559785, 96.0195153039186, 103.116416349824,
+				38.2879450156652, 68.9108257654909, 79.2425081866595,
+				45.6599737787598]
+			)
+		)
+	)) << Run Formulas;
+	New Window( "LM_Dist_PycUrchAlg_5Mins",
+		table1 << Fit Model(
+			Y( :fivemin ),
+			Effects(
+				:Alg, :Pyc, :Alg * :Pyc, :Urchin, :Alg * :Urchin, :Pyc * :Urchin,
+				:Alg * :Pyc * :Urchin
+			),
+			Random Effects( :tank[:Alg, :Pyc, :Urchin] ),
+			NoBounds( 1 ),
+			Personality( "Standard Least Squares" ),
+			Method( "REML" ),
+			Emphasis( "Minimal Report" ),
+			Run(
+				:fivemin << {Summary of Fit( 1 ), Analysis of Variance( 0 ),
+				Parameter Estimates( 1 ), Scaled Estimates( 0 ),
+				Plot Actual by Predicted( 0 ), Plot Regression( 0 ),
+				Plot Residual by Predicted( 0 ), Plot Studentized Residuals( 0 ),
+				Plot Effect Leverage( 0 ), Plot Residual by Normal Quantiles( 0 )}
+			)
+		)
+	) << Move Window( 2604, 36 ) << Size Window( 662, 1022 ) <<
+	Set Window Icon( "Model" );
+)
