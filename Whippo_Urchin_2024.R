@@ -1,6 +1,6 @@
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                                                                                ##
-# Whippo et al. 2023 Urchin Consumption Stats/Figures                            ##
+# Whippo et al. 2024 Urchin Consumption Stats/Figures                            ##
 # Script Created 2023-04-10                                                      ##
 # Last updated 2023-04-10                                                        ##
 # Data source: Ross Whippo PhD Dissertation                                      ##
@@ -37,6 +37,9 @@
 library(tidyverse) # data manipulation, tidying 
 library(viridis) # color-blind-friendly palette 
 library(ggpubr) # additional visualizations 
+
+
+  
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # READ IN DATA                                                                 ####
@@ -124,6 +127,39 @@ per_urchin_hourly <- trials2020_Q %>%
   mutate(loggramsperhour = log10(gramsperhour + 1)) %>%
   unite(trialtank, trial, tank, sep = "", remove = FALSE)
 
+# how much did exposed versus unexposed urchins consume per hour on average?
+per_urchin_hourly %>%
+  group_by(treatment) %>%
+  summarise(mean(gramsperhour))
+# .0672/.127 = 0.5291339 ~ 53% less consumed
+per_urchin_hourly %>%
+  group_by(treatment) %>%
+  dplyr::summarise(
+    rate = mean(gramsperhour),
+    sd = sd(gramsperhour),
+    n = n(),
+    se = sd / sqrt(n)
+  )
+# difference between 3hr and 69hr rates
+per_urchin_hourly %>%
+  group_by(treatment, hourstotal) %>%
+  filter(hourstotal %in% c(3,69)) %>%
+  dplyr::summarise(
+    rate = mean(gramsperhour),
+    sd = sd(gramsperhour),
+    n = n(),
+    se = sd / sqrt(n)
+  )
+# consumption rates at 27 and 33 hours
+per_urchin_hourly %>%
+  group_by(treatment, hourstotal) %>%
+  filter(hourstotal %in% c(27, 33)) %>%
+  dplyr::summarise(
+    rate = mean(gramsperhour),
+    sd = sd(gramsperhour),
+    n = n(),
+    se = sd / sqrt(n)
+  )
 
 # FIGURE - hourly consumed per urchin across all trials 
 feeding_plot <- ggplot(per_urchin_hourly, aes(x = hourstotal, y = gramsperhour, color = pycno)) +
@@ -133,7 +169,7 @@ feeding_plot <- ggplot(per_urchin_hourly, aes(x = hourstotal, y = gramsperhour, 
                       option = "magma") +
   geom_jitter(size = 2, width = 0.5, alpha = 0.25) +
   geom_smooth(method = "lm", linewidth = 2) +
-  scale_y_continuous(name = "Kelp Consumed (g/hr)") +
+  scale_y_continuous(name = expression(Kelp~Consumed~(g~hr^-1))) +
   xlab("Hours") +
   theme_bw(base_size = 15) +
   theme(axis.title.y = element_text(vjust = 3)) +
@@ -200,6 +236,7 @@ Figure2 <- ggarrange(feeding_plot, consumed_plot, consumed_plot2,
                      widths = c(1, 0.3, 0.3),
                      common.legend = TRUE, legend = "top")
 Figure2
+# size 10x6
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -254,6 +291,50 @@ str(trials2021_Q)
 # Q2
 # Did any of the treatments change amount of time urchins spent moving, foraging,
 # or total distance moved?
+
+# total time spent moving for each group
+urchin_behave <- trials2021_Q %>%
+  mutate(interacting = case_when(interaction == "ni" ~ 0,
+                                 interaction == "i" ~ 1)) %>%
+  mutate(interacting = as.numeric(interacting)) %>%
+  mutate(movement = case_when(movement == "st" ~ 0,
+                              movement == "ma" ~ 1,
+                              movement == "mt" ~ 1,
+                              movement == "mp" ~ 1)) %>%
+  mutate(movement = as.numeric(movement)) %>%
+  group_by(urchinID, urchinGroup, pycnoTreat, algalTreat) %>%
+  dplyr::summarise(minutes_mov = sum(movement), minutes_int = sum(interacting)) %>%
+  mutate(prop_move = minutes_mov/60) %>%
+  mutate(prop_int = minutes_int/60)
+# fed/starved move
+urchin_behave %>%
+  group_by(urchinGroup) %>%
+  dplyr::summarise(
+    rate = mean(prop_move),
+    sd = sd(prop_move),
+    n = n(),
+    se = sd / sqrt(n)
+  )
+# fed/starved forage
+urchin_behave %>%
+  group_by(urchinGroup) %>%
+  dplyr::summarise(
+    rate = mean(prop_int),
+    sd = sd(prop_int),
+    n = n(),
+    se = sd / sqrt(n)
+  )
+# starved kelp present
+urchin_behave %>%
+  filter(urchinGroup == "starved" & algalTreat == "nereo") %>%
+  ungroup() %>%
+  group_by(pycnoTreat) %>%
+  dplyr::summarise(
+    rate = mean(prop_int),
+    sd = sd(prop_int),
+    n = n(),
+    se = sd / sqrt(n)
+  )
 
 
 # 5 minute increments
@@ -350,14 +431,25 @@ plot_move <- model_1_plotdat_5 %>%
   ) 
 
 
-# FIGURE - total distance moved
+
+# total distance moved
 dist_data <- trials2021_trackerDist_QAQC %>%
   unite(Treatment, Pyc, Alg, sep = "/") %>%
   mutate(Treatment = case_when(Treatment == "Pycno/No Algae" ~ "Pycno",
                                Treatment == "No Pycno/Algae" ~ "Kelp",
                                Treatment == "No Pycno/No Algae" ~ "Control",
                                Treatment == "Pycno/Algae" ~ "Pycno/Kelp")) 
+# summary of distance traveled
+dist_data %>%
+  group_by(Urchin) %>%
+  dplyr::summarise(
+    rate = mean(distance),
+    sd = sd(distance),
+    n = n(),
+    se = sd / sqrt(n)
+  )
 
+# FIGURE 
 plot_dist <- dist_data %>%
   ggplot(aes(y = distance, x = Treatment, color = Urchin)) +
   geom_jitter(position = position_jitter(seed = 227, width = 0.2), size = 2, alpha = 0.20) +
@@ -375,7 +467,7 @@ plot_dist <- dist_data %>%
     plot.title = element_text(size = 16, hjust = 0.5)
   ) 
 
-# FIGURE - total kelp consumed
+# total kelp consumed
 algalplot <- algal_consumption
 algalplot$algalTreat <- "nereo"  
 algalplot <- algalplot %>%
@@ -385,6 +477,19 @@ algalplot <- algalplot %>%
   add_row(urchinGroup = "fed", pycnoTreat = "control", eaten = 0, algalTreat = "control") %>%
   add_row(urchinGroup = "fed", pycnoTreat = "pycno", eaten = 0, algalTreat = "nereo") %>%
   add_row(urchinGroup = "fed", pycnoTreat = "control", eaten = 0, algalTreat = "nereo") 
+# consumed summary
+algal_consumption %>%
+  group_by(pycnoTreat) %>%
+  mutate(eaten = eaten * 0.01) %>%
+  dplyr::summarise(
+    rate = mean(eaten),
+    sd = sd(eaten),
+    n = n(),
+    se = sd / sqrt(n)
+  )
+
+# FIGURE
+
 
 # 0.01 g per cm^2 from confetti values (21mm, 0.341 g per confetti)
 algalplot <- algalplot %>%
@@ -425,7 +530,7 @@ ggpubr::ggarrange(plot_move, plot_forage, plot_dist, plot_kelp,
                   nrow = 2,
                   heights = c(1, 0.5),
                   common.legend = TRUE, legend = "top")
-# best size: 880 x 660
+# best size: 8 X 7
 
 
 # SUPPLEMENTAL FIGURE OF DIAMETER AND FEEDING 
@@ -439,11 +544,12 @@ diam_plot <- per_urchin_hourly %>%
                       end = 0.7,
                       option = "magma") +
   xlab("Diameter (mm)") +
-  ylab("Kelp Consumed (g/hr)") +
+  scale_y_continuous(name = expression(Kelp~Consumed~(g~hr^-1))) +
   theme_bw(base_size = 15) +
   theme(axis.title.y = element_text(vjust = 3))
   
 diam_plot
+# size 7x5
 
 
 ####
