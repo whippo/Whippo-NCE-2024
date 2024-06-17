@@ -37,9 +37,11 @@
 library(tidyverse) # data manipulation, tidying 
 library(viridis) # color-blind-friendly palette 
 library(ggpubr) # additional visualizations 
+library(lmerTest) # lme
 
 
-  
+# fuction for "%notin%
+`%notin%` <- Negate(`%in%`)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # READ IN DATA                                                                 ####
@@ -160,6 +162,8 @@ per_urchin_hourly %>%
     n = n(),
     se = sd / sqrt(n)
   )
+
+
 
 # FIGURE - hourly consumed per urchin across all trials 
 feeding_plot <- ggplot(per_urchin_hourly, aes(x = hourstotal, y = gramsperhour, color = pycno)) +
@@ -524,7 +528,7 @@ plot_kelp <- plot_eaten %>%
 
 # FULL FIGURE 3
 ggpubr::ggarrange(plot_move, plot_forage, plot_dist, plot_kelp, 
-                  labels = c("A (moving)", "B (foraging)", "C (total distance)", "D (kelp consumed)"), 
+                  labels = c("A (moving)", "B (interacting)", "C (total distance)", "D (kelp consumed)"), 
                   label.x = c(0.03, -0.09, -0.03, -0.18),
                   ncol = 2,
                   nrow = 2,
@@ -554,4 +558,78 @@ diam_plot
 
 ####
 #<<<<<<<<<<<<<<<<<<<<<<<<<<END OF SCRIPT>>>>>>>>>>>>>>>>>>>>>>>>#
+
+
+# Q2 : differences in feeding rates over the course of each trial between treatments
+
+
+# Create data frame of truncated feeding per urchin per time point. Calculate the 
+# 'difference in feeding rate' between time points per urchin (e.g.: no change between 
+# time point for an urchin = 0, increase in feeding since last timepoint = positive number,
+# decrease in feeding = negative number). Convert 'time point' into the actual hours that 
+# they represent for analyses and visualizations
+mean_hourly_per_urchin <- trials2020_Q %>%
+  filter(timepoint %notin% c(0, 8, 9)) %>%
+  mutate(g_consumed = consumed * 0.341) %>%
+  mutate(hours = case_match(timepoint,
+    1 ~ 3,
+    2 ~ 6,
+    3 ~ 12,
+    4 ~ 6,
+    5 ~ 6,
+    6 ~ 12,
+    7 ~ 6,
+  )) %>%
+  mutate(hourly_consumed = log((g_consumed/hours) + 1))
+
+
+hourly_lme <- lmer(hourly_consumed ~ pycno + timepoint + (1|ID:trial) +  )
+
+
+  group_by(ID, pycno, trial) %>%
+  summarise(mean_consumed = mean(g_consumed))
+
+# with scaled time points
+urchin_timeseries$Hours <- urchin_timeseries$timepoint %>%
+
+
+
+
+mhpu_log <- mean_hourly_per_urchin %>%
+  mutate(log_mean = log(mean_consumed + 1))
+
+# Mixed effects model testing if feeding rate changes for urchins within a single
+# trials, with urchin ID nested within trial as random factors
+mean_lme <- lmer(log_mean ~ pycno + (1|ID:trial) + (1|trial), data = timepoint_consumption_change)
+
+# test if assumptions of model are met
+change_sim <- simulateResiduals(fittedModel = change_lme, plot = F)
+plot(change_sim)
+testDispersion(change_lme)
+# Almost all assumptions are violated
+
+# make plot of variances around each trial
+# visualize spread of data per trial
+ggboxplot(timepoint_consumption_change, x = "hours", y = "change", add = "jitter")
+
+# Try again with log transformed data shifted by a constant to make all 
+# values positive before taking the log
+timepoint_consumption_change_log <- timepoint_consumption_change %>%
+  mutate(change = log(change + (abs(min(change)) + 0.001)))
+
+# Mixed effects model testing if feeding rate changes for urchins within a single
+# trials, with urchin ID nested within trial as random factors log transformed
+change_lme <- lmer(change ~ pycno + (1|ID:trial) + (1|trial), data = timepoint_consumption_change_log)
+
+# test if assumptions of model are met
+change_sim <- simulateResiduals(fittedModel = change_lme, plot = F)
+plot(change_sim)
+testDispersion(change_lme)
+# Almost all assumptions are still violated
+
+
+oo <- options(repos = "https://cran.r-project.org/")
+install.packages("Matrix")
+install.packages("lme4")
+options(oo)
 
