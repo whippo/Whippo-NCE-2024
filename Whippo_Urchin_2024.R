@@ -234,7 +234,7 @@ consumed_plot2 <- per_urchin_hourly %>%
 
 # FULL FIGURE 2
 Figure2 <- ggarrange(feeding_plot, consumed_plot, consumed_plot2,
-                     labels = c("A", "B", "C"),
+                     labels = c("(a)", "(b)", "(c)"),
                      ncol = 3,
                      nrow = 1,
                      widths = c(1, 0.3, 0.3),
@@ -528,7 +528,7 @@ plot_kelp <- plot_eaten %>%
 
 # FULL FIGURE 3
 ggpubr::ggarrange(plot_move, plot_forage, plot_dist, plot_kelp, 
-                  labels = c("A (moving)", "B (interacting)", "C (total distance)", "D (kelp consumed)"), 
+                  labels = c("a (moving)", "b (interacting)", "c (total distance)", "d (kelp consumed)"), 
                   label.x = c(0.03, -0.09, -0.03, -0.18),
                   ncol = 2,
                   nrow = 2,
